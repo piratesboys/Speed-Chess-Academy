@@ -491,29 +491,3 @@ footer p {
 
 }
 
-.discord-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #5865F2; /* Couleur officielle Discord */
-  color: #ffffff !important;
-  font-family: 'Arial', sans-serif;
-  font-weight: bold;
-  font-size: 16px;
-  padding: 12px 24px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 15px;
-}
-
-.discord-btn:hover {
-  background-color: #4752C4; /* Violet plus foncé au survol */
-  transform: translateY(-2px); /* Léger effet de soulèvement */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.discord-btn:active {
-  transform: translateY(0);
-}
