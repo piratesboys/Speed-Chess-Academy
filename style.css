@@ -531,3 +531,26 @@ select option {
     background: #0b1020;
     color: #ffffff;
 }
+
+.members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.member-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.member-card h3 {
+    margin-top: 0;
+}
+
+.member-card a {
+    text-decoration: none;
+    font-weight: bold;
+}
