@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             {
                 method: "GET",
                 headers: {
-                    Accept: "application/json"
+                    Accept: "application/x-ndjson"
                 }
             }
         );
@@ -27,17 +27,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
         }
 
-        const data = await response.json();
+        // L'API renvoie du NDJSON :
+        // un objet JSON par ligne.
+        const text = await response.text();
 
-        console.log("Membres Lichess :", data);
+        console.log("Réponse brute Lichess :", text);
 
-        // Vérifie que Lichess a bien renvoyé une liste
-        if (!Array.isArray(data)) {
-            throw new Error("Format de réponse Lichess inattendu.");
-        }
+        const members = text
+            .split("\n")
+            .map(line => line.trim())
+            .filter(line => line.length > 0)
+            .map(line => JSON.parse(line));
 
-        // Aucun membre
-        if (data.length === 0) {
+        console.log("Membres :", members);
+
+        if (members.length === 0) {
             container.innerHTML = `
                 <div class="card">
                     <p>ℹ️ Aucun membre trouvé.</p>
@@ -51,30 +55,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Titre
         const title = document.createElement("h2");
-        title.textContent = `Membres (${data.length})`;
+        title.textContent = `Membres (${members.length})`;
         container.appendChild(title);
 
-        // Conteneur de la liste
-        const list = document.createElement("div");
-        list.className = "members-grid";
+        // Grille
+        const grid = document.createElement("div");
+        grid.className = "members-grid";
 
-        data.forEach((member) => {
+        members.forEach(member => {
             const card = document.createElement("div");
             card.className = "card member-card";
 
             const username = member.username || "Joueur inconnu";
-            const title = member.title || "";
+            const lichessTitle = member.title || "";
 
             const name = document.createElement("h3");
 
-            if (title) {
-                name.textContent = `${title} ${username}`;
-            } else {
-                name.textContent = username;
-            }
+            name.textContent = lichessTitle
+                ? `${lichessTitle} ${username}`
+                : username;
 
             const link = document.createElement("a");
-            link.href = `https://lichess.org/@/${encodeURIComponent(username)}`;
+
+            link.href =
+                `https://lichess.org/@/${encodeURIComponent(username)}`;
+
             link.textContent = "Voir le profil →";
             link.target = "_blank";
             link.rel = "noopener noreferrer";
@@ -82,19 +87,31 @@ document.addEventListener("DOMContentLoaded", async () => {
             card.appendChild(name);
             card.appendChild(link);
 
-            list.appendChild(card);
+            grid.appendChild(card);
         });
 
-        container.appendChild(list);
+        container.appendChild(grid);
 
     } catch (error) {
         console.error("❌ Erreur :", error);
 
-        container.innerHTML = `
-            <div class="card error-card">
-                <p>❌ Impossible de charger les membres.</p>
-                <p>${error instanceof Error ? error.message : "Erreur inconnue."}</p>
-            </div>
-        `;
+        container.innerHTML = "";
+
+        const card = document.createElement("div");
+        card.className = "card error-card";
+
+        const title = document.createElement("p");
+        title.textContent = "❌ Impossible de charger les membres.";
+
+        const message = document.createElement("p");
+        message.textContent =
+            error instanceof Error
+                ? error.message
+                : "Erreur inconnue.";
+
+        card.appendChild(title);
+        card.appendChild(message);
+
+        container.appendChild(card);
     }
 });
