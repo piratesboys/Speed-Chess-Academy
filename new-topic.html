@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Topic — Speed Chess Academy ♟️⚡</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="navigation">
+
+        <a class="button" href="index.html">
+            🏠 Home
+        </a>
+
+        <a class="button" href="members.html">
+            👥 Members
+        </a>
+
+        <a class="button" href="forum.html">
+            💬 Forum
+        </a>
+
+        <a class="button" href="tournaments.html">
+            🏆 Tournaments
+        </a>
+
+        <a class="button" href="studies.html">
+            📚 Studies
+        </a>
+
+        <a class="button" href="bots.html">
+            🤖 Bots
+        </a>
+
+        <a class="button" href="partners.html">
+            🤝 Partners
+        </a>
+
+        <a class="button" href="halloffame.html">
+            🏅 Hall of Fame
+        </a>
+
+        <a
+            href="https://discord.gg"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="discord-btn"
+        >
+            💬 Join Our Discord Server
+        </a>
+
+        <a
+            class="button"
+            href="https://lichess.org/team/speed-chess-academy"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            ♟️ Join us on Lichess
+        </a>
+
+    </div>
+
+</header>
+
+
+<main>
+
+
+<section>
+
+    <h2>✏️ Create a New Topic</h2>
+
+    <div class="card">
+
+        <form id="newTopicForm">
+
+
+            <label for="category">
+                Category
+            </label>
+
+            <select id="category" name="category" required>
+
+                <option value="">
+                    Select a category
+                </option>
+
+                <option value="general">
+                    💬 General Discussion
+                </option>
+
+                <option value="training">
+                    📚 Training & Improvement
+                </option>
+
+                <option value="analysis">
+                    ⚔️ Game Analysis
+                </option>
+
+                <option value="tournaments">
+                    🏆 Tournaments
+                </option>
+
+                <option value="suggestions">
+                    💡 Suggestions & Ideas
+                </option>
+
+                <option value="announcements">
+                    📢 Announcements
+                </option>
+
+            </select>
+
+
+            <br><br>
+
+
+            <label for="title">
+                Topic Title
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Enter your topic title..."
+                maxlength="100"
+                required
+            >
+
+
+            <br><br>
+
+
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Your username"
+                maxlength="30"
+                required
+            >
+
+
+            <br><br>
+
+
+            <label for="message">
+                Message
+            </label>
+
+            <textarea
+                id="message"
+                name="message"
+                placeholder="Write your message..."
+                required
+            ></textarea>
+
+
+            <br><br>
+
+
+            <button
+                class="button"
+                type="submit"
+            >
+                🚀 Create Topic
+            </button>
+
+
+            <a
+                class="button"
+                href="forum.html"
+            >
+                ❌ Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<section>
+
+    <h2>📜 Before Posting</h2>
+
+    <div class="card">
+
+        <ul>
+
+            <li>
+                🤝 Be respectful to all members.
+            </li>
+
+            <li>
+                🚫 Do not post spam or inappropriate content.
+            </li>
+
+            <li>
+                ♟️ Keep discussions related to the community
+                and chess when possible.
+            </li>
+
+            <li>
+                ⚡ Have fun and enjoy the community!
+            </li>
+
+        </ul>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<footer>
+
+    <h2>⚡ SPEED CHESS FOREVER! ♟️</h2>
+
+    <p>
+        Speed Chess Academy — Official Lichess Team
+    </p>
+
+    <p>
+        Created on September 5, 2026
+    </p>
+
+</footer>
+
+
+<script>
+
+    const form = document.getElementById("newTopicForm");
+
+    form.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        alert(
+            "Topic creation is not connected to a database yet. " +
+            "The forum backend will be added later."
+        );
+
+    });
+
+</script>
+
+
+</body>
+
+</html>
