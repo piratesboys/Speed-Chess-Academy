@@ -7,20 +7,17 @@
 // MEMBER COUNTER
 // =====================================
 
-let members = 15;
-let goal = 200;
+let members = 55;
+const goal = 200;
 
 function updateMembers() {
+    const counter = document.getElementById("memberCounter");
 
-    const counter =
-        document.getElementById("memberCounter");
-
-    if (counter) {
-
-        counter.textContent =
-            "♟️ Members: " + members + " / " + goal;
-
+    if (!counter) {
+        return;
     }
+
+    counter.textContent = `♟️ Members: ${members} / ${goal}`;
 }
 
 
@@ -29,9 +26,7 @@ function updateMembers() {
 // =====================================
 
 async function loadMembers() {
-
-    const membersContainer =
-        document.getElementById("membersList");
+    const membersContainer = document.getElementById("membersList");
 
     // Do nothing if we are not on members.html
     if (!membersContainer) {
@@ -44,23 +39,24 @@ async function loadMembers() {
         </div>
     `;
 
-
     try {
-
         const response = await fetch(
-            "https://lichess.org/api/team/speed-chess-academy/users"
+            "https://lichess.org/api/team/speed-chess-academy/users",
+            {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            }
         );
-
 
         if (!response.ok) {
             throw new Error(
-                "Lichess API error: " + response.status
+                `Lichess API error: ${response.status} ${response.statusText}`
             );
         }
 
-
         const data = await response.json();
-
 
         // =====================================
         // GET MEMBERS FROM API
@@ -69,31 +65,57 @@ async function loadMembers() {
         let teamMembers = [];
 
         if (Array.isArray(data)) {
-
             teamMembers = data;
-
         } else if (Array.isArray(data.result)) {
-
             teamMembers = data.result;
-
         } else if (Array.isArray(data.users)) {
-
             teamMembers = data.users;
-
         }
 
+        // Remove invalid members and duplicates
+        const uniqueMembers = [];
+        const usernames = new Set();
 
-        // Clear loading message
+        teamMembers.forEach(member => {
+            if (!member || typeof member !== "object") {
+                return;
+            }
+
+            const username = member.username || member.name;
+
+            if (!username) {
+                return;
+            }
+
+            const normalizedUsername = username.toLowerCase();
+
+            if (usernames.has(normalizedUsername)) {
+                return;
+            }
+
+            usernames.add(normalizedUsername);
+            uniqueMembers.push({
+                ...member,
+                username
+            });
+        });
+
+        teamMembers = uniqueMembers;
+
+        // =====================================
+        // CLEAR LOADING MESSAGE
+        // =====================================
+
         membersContainer.innerHTML = "";
 
+        // =====================================
+        // NO MEMBERS
+        // =====================================
 
         if (teamMembers.length === 0) {
-
             membersContainer.innerHTML = `
                 <div class="card">
-                    <p>
-                        ❌ No members found.
-                    </p>
+                    <p>❌ No members found.</p>
 
                     <br>
 
@@ -111,101 +133,72 @@ async function loadMembers() {
             return;
         }
 
-
         // =====================================
         // CREATE MEMBER CARDS
         // =====================================
 
+        const fragment = document.createDocumentFragment();
+
         teamMembers.forEach(member => {
-
-            const username =
-                member.username || member.name;
-
-
-            // Ignore invalid members
-            if (!username) {
-                return;
-            }
-
+            const username = member.username;
 
             // ---------------------------------
             // MEMBER CARD
             // ---------------------------------
 
-            const card =
-                document.createElement("div");
-
+            const card = document.createElement("div");
             card.className = "member";
-
 
             // ---------------------------------
             // MEMBER TITLE
             // ---------------------------------
 
-            const title =
-                document.createElement("h3");
-
+            const title = document.createElement("h3");
 
             // ---------------------------------
             // CLICKABLE USERNAME
             // ---------------------------------
 
-            const usernameLink =
-                document.createElement("a");
+            const usernameLink = document.createElement("a");
 
-            usernameLink.className =
-                "study-link";
+            usernameLink.className = "study-link";
 
-            usernameLink.textContent =
-                "♟️ " + username;
+            usernameLink.textContent = `♟️ ${username}`;
 
             usernameLink.href =
-                "https://lichess.org/@" +
-                encodeURIComponent(username);
+                `https://lichess.org/@/${encodeURIComponent(username)}`;
 
-            usernameLink.target =
-                "_blank";
-
-            usernameLink.rel =
-                "noopener noreferrer";
-
+            usernameLink.target = "_blank";
+            usernameLink.rel = "noopener noreferrer";
 
             // Put clickable username inside title
             title.appendChild(usernameLink);
 
-
             // Add title to card
             card.appendChild(title);
 
-
-            // Add card to members list
-            membersContainer.appendChild(card);
-
+            // Add card to fragment
+            fragment.appendChild(card);
         });
 
+        // Add all cards at once
+        membersContainer.appendChild(fragment);
 
         // =====================================
         // UPDATE MEMBER COUNTER
         // =====================================
 
         members = teamMembers.length;
-
         updateMembers();
 
-    }
-
-
-    catch (error) {
-
+    } catch (error) {
         console.error(
             "Unable to load Lichess members:",
             error
         );
 
-
         membersContainer.innerHTML = `
             <div class="card">
-
                 <p>
                     ❌ Unable to load members automatically.
                 </p>
@@ -226,12 +219,9 @@ async function loadMembers() {
                 >
                     ♟️ Open Lichess Team
                 </a>
-
             </div>
         `;
-
     }
-
 }
 
 
@@ -239,6 +229,7 @@ async function loadMembers() {
 // START MEMBER SYSTEM
 // =====================================
 
-updateMembers();
-
-loadMembers();
+document.addEventListener("DOMContentLoaded", () => {
+    updateMembers();
+    loadMembers();
+});
