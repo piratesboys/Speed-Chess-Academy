@@ -7,14 +7,15 @@
 // ------------------------------------------
 
 const SUPABASE_URL = "https://gfrqjawavkzorxzgnhqf.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_PUBLISHABLE_KEY";
 
-const supabaseClient = window.supabase
-    ? window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    )
-    : null;
+// IMPORTANT:
+// Replace this with your real sb_publishable_... key
+const SUPABASE_ANON_KEY = "sb_publishable_6hpEe9RpVLvjHwL4CZXIXw_Maq9ivo9";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
 
 // ------------------------------------------
@@ -63,14 +64,14 @@ function getTopicId() {
 // ------------------------------------------
 
 function checkSupabase() {
-    if (!supabaseClient) {
+    if (!window.supabase) {
         console.error("Supabase library is not loaded.");
         return false;
     }
 
     if (
         SUPABASE_URL === "YOUR_SUPABASE_URL" ||
-        SUPABASE_ANON_KEY === "sb_publishable_6hpEe9RpVLvjHwL4CZXIXw_Maq9ivo9"
+        SUPABASE_ANON_KEY === "YOUR_PUBLISHABLE_KEY"
     ) {
         console.error("Supabase is not configured yet.");
         return false;
@@ -85,8 +86,7 @@ function checkSupabase() {
 // ------------------------------------------
 
 async function loadTopics() {
-    const container =
-        document.getElementById("topicsContainer");
+    const container = document.getElementById("topicsContainer");
 
     if (!container) {
         return;
@@ -120,10 +120,7 @@ async function loadTopics() {
                 <div class="card">
                     <p>💬 No topics yet.</p>
                     <br>
-                    <a
-                        class="button"
-                        href="new-topic.html"
-                    >
+                    <a class="button" href="new-topic.html">
                         ✏️ Create the first topic
                     </a>
                 </div>
@@ -132,8 +129,7 @@ async function loadTopics() {
         }
 
         data.forEach(topic => {
-            const card =
-                document.createElement("div");
+            const card = document.createElement("div");
 
             card.className = "card forum-topic";
 
@@ -165,10 +161,7 @@ async function loadTopics() {
         });
 
     } catch (error) {
-        console.error(
-            "Unable to load topics:",
-            error
-        );
+        console.error("Unable to load topics:", error);
 
         container.innerHTML = `
             <div class="card">
@@ -185,8 +178,7 @@ async function loadTopics() {
 // ------------------------------------------
 
 async function loadTopic() {
-    const container =
-        document.getElementById("topicContainer");
+    const container = document.getElementById("topicContainer");
 
     if (!container) {
         return;
@@ -199,10 +191,7 @@ async function loadTopic() {
             <div class="card">
                 <p>❌ No topic was specified.</p>
                 <br>
-                <a
-                    class="button"
-                    href="forum.html"
-                >
+                <a class="button" href="forum.html">
                     ⬅️ Back to Forum
                 </a>
             </div>
@@ -240,14 +229,11 @@ async function loadTopic() {
         }
 
         document.title =
-            data.title +
-            " — Speed Chess Academy ♟️⚡";
+            data.title + " — Speed Chess Academy ♟️⚡";
 
         container.innerHTML = `
             <div class="card forum-topic">
-                <h2>
-                    ${escapeHTML(data.title)}
-                </h2>
+                <h2>${escapeHTML(data.title)}</h2>
 
                 <p>
                     📂 ${escapeHTML(data.category)}
@@ -269,10 +255,7 @@ async function loadTopic() {
         `;
 
     } catch (error) {
-        console.error(
-            "Unable to load topic:",
-            error
-        );
+        console.error("Unable to load topic:", error);
 
         container.innerHTML = `
             <div class="card">
@@ -288,8 +271,7 @@ async function loadTopic() {
 // ------------------------------------------
 
 async function loadReplies() {
-    const container =
-        document.getElementById("repliesContainer");
+    const container = document.getElementById("repliesContainer");
 
     if (!container) {
         return;
@@ -338,8 +320,7 @@ async function loadReplies() {
         }
 
         data.forEach(reply => {
-            const card =
-                document.createElement("div");
+            const card = document.createElement("div");
 
             card.className = "card forum-topic";
 
@@ -361,10 +342,7 @@ async function loadReplies() {
         });
 
     } catch (error) {
-        console.error(
-            "Unable to load replies:",
-            error
-        );
+        console.error("Unable to load replies:", error);
 
         container.innerHTML = `
             <div class="card">
@@ -383,66 +361,62 @@ async function createTopic(event) {
     event.preventDefault();
 
     if (!checkSupabase()) {
-        alert(
-            "The forum database is not configured yet."
-        );
+        alert("The forum database is not configured yet.");
         return;
     }
 
-    const category =
-        document.getElementById("category").value.trim();
+    const category = document
+        .getElementById("category")
+        .value
+        .trim();
 
-    const title =
-        document.getElementById("title").value.trim();
+    const title = document
+        .getElementById("title")
+        .value
+        .trim();
 
-    const username =
-        document.getElementById("username").value.trim();
+    const username = document
+        .getElementById("username")
+        .value
+        .trim();
 
-    const message =
-        document.getElementById("message").value.trim();
+    const message = document
+        .getElementById("message")
+        .value
+        .trim();
 
-    if (
-        !category ||
-        !title ||
-        !username ||
-        !message
-    ) {
+    if (!category || !title || !username || !message) {
         alert("Please complete all fields.");
         return;
     }
 
-    const submitButton =
-        event.target.querySelector(
-            'button[type="submit"]'
-        );
+    const submitButton = event.target.querySelector(
+        'button[type="submit"]'
+    );
 
     if (submitButton) {
         submitButton.disabled = true;
-        submitButton.textContent =
-            "⚡ Creating...";
+        submitButton.textContent = "⚡ Creating...";
     }
 
     try {
-        const { data, error } =
-            await supabaseClient
-                .from("topics")
-                .insert({
-                    category: category,
-                    title: title,
-                    username: username,
-                    message: message
-                })
-                .select()
-                .single();
+        const { data, error } = await supabaseClient
+            .from("topics")
+            .insert({
+                category: category,
+                title: title,
+                username: username,
+                message: message
+            })
+            .select()
+            .single();
 
         if (error) {
             throw error;
         }
 
         if (!data) {
-            throw new Error(
-                "Topic was not returned."
-            );
+            throw new Error("Topic was not returned.");
         }
 
         window.location.href =
@@ -450,10 +424,7 @@ async function createTopic(event) {
             encodeURIComponent(data.id);
 
     } catch (error) {
-        console.error(
-            "Unable to create topic:",
-            error
-        );
+        console.error("Unable to create topic:", error);
 
         alert(
             "Unable to create the topic. " +
@@ -462,8 +433,7 @@ async function createTopic(event) {
 
         if (submitButton) {
             submitButton.disabled = false;
-            submitButton.textContent =
-                "🚀 Create Topic";
+            submitButton.textContent = "🚀 Create Topic";
         }
     }
 }
@@ -477,9 +447,7 @@ async function createReply(event) {
     event.preventDefault();
 
     if (!checkSupabase()) {
-        alert(
-            "The forum database is not configured yet."
-        );
+        alert("The forum database is not configured yet.");
         return;
     }
 
@@ -490,37 +458,38 @@ async function createReply(event) {
         return;
     }
 
-    const username =
-        document.getElementById("username").value.trim();
+    const username = document
+        .getElementById("username")
+        .value
+        .trim();
 
-    const message =
-        document.getElementById("message").value.trim();
+    const message = document
+        .getElementById("message")
+        .value
+        .trim();
 
     if (!username || !message) {
         alert("Please complete all fields.");
         return;
     }
 
-    const submitButton =
-        event.target.querySelector(
-            'button[type="submit"]'
-        );
+    const submitButton = event.target.querySelector(
+        'button[type="submit"]'
+    );
 
     if (submitButton) {
         submitButton.disabled = true;
-        submitButton.textContent =
-            "⚡ Posting...";
+        submitButton.textContent = "⚡ Posting...";
     }
 
     try {
-        const { error } =
-            await supabaseClient
-                .from("replies")
-                .insert({
-                    topic_id: topicId,
-                    username: username,
-                    message: message
-                });
+        const { error } = await supabaseClient
+            .from("replies")
+            .insert({
+                topic_id: topicId,
+                username: username,
+                message: message
+            });
 
         if (error) {
             throw error;
@@ -531,10 +500,7 @@ async function createReply(event) {
         await loadReplies();
 
     } catch (error) {
-        console.error(
-            "Unable to create reply:",
-            error
-        );
+        console.error("Unable to create reply:", error);
 
         alert(
             "Unable to post the reply. " +
@@ -544,8 +510,7 @@ async function createReply(event) {
 
     if (submitButton) {
         submitButton.disabled = false;
-        submitButton.textContent =
-            "💬 Post Reply";
+        submitButton.textContent = "💬 Post Reply";
     }
 }
 
@@ -554,32 +519,30 @@ async function createReply(event) {
 // PAGE INITIALIZATION
 // ------------------------------------------
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
+document.addEventListener("DOMContentLoaded", function() {
 
-        loadTopics();
-        loadTopic();
-        loadReplies();
+    loadTopics();
+    loadTopic();
+    loadReplies();
 
-        const newTopicForm =
-            document.getElementById("newTopicForm");
+    const newTopicForm =
+        document.getElementById("newTopicForm");
 
-        if (newTopicForm) {
-            newTopicForm.addEventListener(
-                "submit",
-                createTopic
-            );
-        }
-
-        const replyForm =
-            document.getElementById("replyForm");
-
-        if (replyForm) {
-            replyForm.addEventListener(
-                "submit",
-                createReply
-            );
-        }
+    if (newTopicForm) {
+        newTopicForm.addEventListener(
+            "submit",
+            createTopic
+        );
     }
-);
+
+    const replyForm =
+        document.getElementById("replyForm");
+
+    if (replyForm) {
+        replyForm.addEventListener(
+            "submit",
+            createReply
+        );
+    }
+
+});
