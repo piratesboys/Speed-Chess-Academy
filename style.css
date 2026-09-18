@@ -513,3 +513,21 @@ footer p {
   transform: translateY(-2px); /* Léger effet de soulèvement */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
+
+input,
+textarea,
+select {
+    background: #0b1020;
+    color: #ffffff;
+    border: 1px solid rgba(100, 190, 255, 0.35);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #8fa8c2;
+}
+
+select option {
+    background: #0b1020;
+    color: #ffffff;
+}
