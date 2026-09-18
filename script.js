@@ -6,20 +6,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    container.innerHTML = "<p>⏳ Chargement des membres...</p>";
+    container.innerHTML = "<p>⏳ Connexion à Lichess...</p>";
 
     try {
-        const response = await fetch(
-            "https://lichess.org/api/team/speed-chess-academy/users",
-            {
-                method: "GET",
-                headers: {
-                    Accept: "application/x-ndjson"
-                }
-            }
-        );
+        const url =
+            "https://lichess.org/api/team/speed-chess-academy/users";
 
-        console.log("Status Lichess :", response.status);
+        const response = await fetch(url);
+
+        console.log("Status :", response.status);
+        console.log("Content-Type :", response.headers.get("content-type"));
 
         if (!response.ok) {
             throw new Error(
@@ -27,38 +23,53 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
         }
 
-        // L'API renvoie du NDJSON :
+        // IMPORTANT :
+        // On récupère le texte brut.
+        // On n'utilise PAS response.json().
+        const rawText = await response.text();
+
+        console.log("========== RÉPONSE LICHESS ==========");
+        console.log(rawText);
+        console.log("=====================================");
+
+        // L'API Lichess renvoie normalement du NDJSON :
         // un objet JSON par ligne.
-        const text = await response.text();
-
-        console.log("Réponse brute Lichess :", text);
-
-        const members = text
-            .split("\n")
+        const lines = rawText
+            .split(/\r?\n/)
             .map(line => line.trim())
-            .filter(line => line.length > 0)
-            .map(line => JSON.parse(line));
+            .filter(Boolean);
 
-        console.log("Membres :", members);
+        console.log("Nombre de lignes :", lines.length);
+
+        const members = [];
+
+        for (const line of lines) {
+            try {
+                const member = JSON.parse(line);
+                members.push(member);
+            } catch (error) {
+                console.error("❌ Ligne JSON invalide :", line);
+                console.error(error);
+            }
+        }
+
+        console.log("Membres récupérés :", members);
 
         if (members.length === 0) {
             container.innerHTML = `
                 <div class="card">
-                    <p>ℹ️ Aucun membre trouvé.</p>
+                    <p>⚠️ Aucun membre n'a pu être récupéré.</p>
+                    <p>Regarde la console du navigateur pour voir la réponse Lichess.</p>
                 </div>
             `;
             return;
         }
 
-        // Nettoyage
         container.innerHTML = "";
 
-        // Titre
         const title = document.createElement("h2");
         title.textContent = `Membres (${members.length})`;
-        container.appendChild(title);
 
-        // Grille
         const grid = document.createElement("div");
         grid.className = "members-grid";
 
@@ -66,10 +77,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             const card = document.createElement("div");
             card.className = "card member-card";
 
-            const username = member.username || "Joueur inconnu";
-            const lichessTitle = member.title || "";
-
             const name = document.createElement("h3");
+
+            const username =
+                member.username ||
+                member.name ||
+                member.user?.username ||
+                "Joueur inconnu";
+
+            const lichessTitle =
+                member.title ||
+                member.user?.title ||
+                "";
 
             name.textContent = lichessTitle
                 ? `${lichessTitle} ${username}`
@@ -90,28 +109,25 @@ document.addEventListener("DOMContentLoaded", async () => {
             grid.appendChild(card);
         });
 
+        container.appendChild(title);
         container.appendChild(grid);
 
     } catch (error) {
-        console.error("❌ Erreur :", error);
+        console.error("❌ ERREUR GÉNÉRALE :", error);
 
         container.innerHTML = "";
 
         const card = document.createElement("div");
         card.className = "card error-card";
 
-        const title = document.createElement("p");
-        title.textContent = "❌ Impossible de charger les membres.";
-
         const message = document.createElement("p");
+
         message.textContent =
-            error instanceof Error
+            `❌ ${error instanceof Error
                 ? error.message
-                : "Erreur inconnue.";
+                : "Erreur inconnue"}`;
 
-        card.appendChild(title);
         card.appendChild(message);
-
         container.appendChild(card);
     }
 });
